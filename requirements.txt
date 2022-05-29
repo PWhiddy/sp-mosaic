@@ -1,0 +1,10 @@
+clip==1.0
+numpy==1.22.3
+Pillow==9.1.1
+scikit_learn==1.1.1
+torch==1.11.0
+torchvision
+tqdm==4.63.0
+ftfy
+regex
+git+https://github.com/openai/CLIP.git
