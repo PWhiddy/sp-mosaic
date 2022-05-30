@@ -2,6 +2,9 @@
 
 Script to create a mosiac of many images, visually sorted by the first 2 principal components of their CLIP embedding.
 
+More info:  
+[Creating Mosaics Sorted by Visual Similarity using CLIP Embeddings](https://pwhiddy.github.io/more-writing/2022/05/30/CLIP-Sorted-Mosaics.html)
+
 Usage:
 ```python
 from pathlib import Path
