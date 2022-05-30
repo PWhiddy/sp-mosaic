@@ -16,4 +16,5 @@ mosaic.create_mosaic(all_paths, 25, 512, 256, "test_grid.png")
 ```
 
 Example result:  
+
 ![example](small_grid.jpg?raw=true)
