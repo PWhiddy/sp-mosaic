@@ -1,8 +1,10 @@
+from pathlib import Path
+import argparse
 import numpy as np
 import torch
-from sklearn.decomposition import PCA
+#from sklearn.decomposition import PCA
+import umap
 from PIL import Image
-from pathlib import Path
 from tqdm import tqdm
 import clip
 
@@ -15,10 +17,12 @@ def create_mosaic(all_img_paths, dim, pre_crop, img_size, out_name):
             img = preprocess(Image.open(p)).unsqueeze(0)
             embeddings[idx] = model.encode_image(img).squeeze()
     X = embeddings.numpy()
-    pca = PCA(n_components=2)
-    pca_vals = pca.fit_transform(X)
-    print(f"Explained variance by first 2 principal components: {pca.explained_variance_ratio_.sum()}")
-    comps_with_idx = [{"img_idx": idx, "comps": comps } for idx, comps in enumerate(pca_vals)]
+    #pca = PCA(n_components=2)
+    #pca_vals = pca.fit_transform(X)
+    #print(f"Explained variance by first 2 principal components: {pca.explained_variance_ratio_.sum()}")
+    print("Running umap")
+    reduced_dim_dat = umap.UMAP().fit_transform(X)   
+    comps_with_idx = [{"img_idx": idx, "comps": comps } for idx, comps in enumerate(reduced_dim_dat)]
     print("Sorting grid")
     # sort x 
     x_sorted = sorted(comps_with_idx, key=lambda comps: comps["comps"][0])
@@ -50,3 +54,15 @@ def create_mosaic(all_img_paths, dim, pre_crop, img_size, out_name):
                 y_idx*img_size:(y_idx+1)*img_size] = np.asarray(cropped_img)
     im = Image.fromarray(main_img)
     im.save(out_name)
+
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser()
+  parser.add_argument("img_dir")
+  parser.add_argument("grid_dim", type=int)
+  parser.add_argument("out_name", default="mosaic_out.png")
+  parser.add_argument("img_size", type=int, default=256)
+  parser.add_argument("precrop_size", type=int, default=512)
+  args = parser.parse_args()
+  pth = Path(args.img_dir)
+  all_paths = list(pth.glob("*.png")) + list(pth.glob("*.jpeg"))
+  create_mosaic(all_paths, args.grid_dim, args.precrop_size, args.img_size, args.out_name)
