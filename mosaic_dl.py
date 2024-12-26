@@ -11,7 +11,17 @@ from tqdm import tqdm
 import torch
 from torch.utils.data import Dataset, DataLoader
 
-print("cuda avialable?", torch.cuda.is_available())
+# backends priority from least to greatest
+
+device = "cpu"
+
+if torch.backends.mps.is_available():
+    device = "mps"
+
+if torch.cuda.is_available():
+    device = "cuda"
+
+print(f"using device: {device}")
 
 import clip
 
@@ -30,7 +40,7 @@ class FlatDataset(Dataset):
     def __len__(self):
         return len(self.image_paths)
 
-device = "cuda" # "cpu"
+
 
 def create_mosaic(all_img_paths, dim, pre_crop, img_size, out_name):
     model, preprocess = clip.load('ViT-B/32')
